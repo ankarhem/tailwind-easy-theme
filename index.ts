@@ -7,15 +7,17 @@ type ColorProps<T extends Record<string, string>> = {
   [K in keyof T]: HexColor<T[K]>;
 };
 
-const plugin = <T extends Record<string, string>>(colors: ColorProps<T>) => {
+export const easyTheme = <T extends Record<string, string>>(
+  colors: ColorProps<T>
+) => {
   let cssVariables: Record<string, string> = {};
   let themeSettings: Record<string, string> = {};
 
-  Object.entries(colors).forEach(([key, value]) => {
-    const hexColor = colors[key];
+  Object.keys(colors).forEach((key) => {
+    const value = colors[key];
 
     // convert to 100, 100%, 100%
-    const hslValue = colord(hexColor)
+    const hslValue = colord(value)
       .alpha(1)
       .toHslString()
       .replace(/hsl\((.*)\)/g, '$1');
@@ -45,5 +47,3 @@ const plugin = <T extends Record<string, string>>(colors: ColorProps<T>) => {
     }
   )(colors);
 };
-
-export default plugin;

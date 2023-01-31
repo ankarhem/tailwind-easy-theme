@@ -1,5 +1,5 @@
 import { Config } from 'tailwindcss';
-import cssVariables from './index';
+import { easyTheme } from './index';
 
 const config: Config = {
   content: [],
@@ -7,7 +7,7 @@ const config: Config = {
     extend: {},
   },
   plugins: [
-    cssVariables({
+    easyTheme({
       primary: '#ff0000',
     }),
   ],
