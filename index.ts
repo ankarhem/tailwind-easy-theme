@@ -16,11 +16,14 @@ export const easyTheme = <T extends Record<string, string>>(
   Object.keys(colors).forEach((key) => {
     const value = colors[key];
 
-    // convert to 100, 100%, 100%
+    // convert to 100 100% 100%
     const hslValue = colord(value)
       .alpha(1)
       .toHslString()
-      .replace(/hsl\((.*)\)/g, '$1');
+      // remove hsl()
+      .replace(/\((.*)\)/g, '$1')
+      // remove commas
+      .replace(/,/g, '');
 
     cssVariables[`--color-${key}`] = hslValue;
     // Set theme settings to use css variables and fallback to hex color
