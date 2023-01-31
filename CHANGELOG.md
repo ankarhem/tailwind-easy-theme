@@ -1,5 +1,11 @@
 # tailwind-easy-theme
 
+## 1.0.6
+
+### Patch Changes
+
+- add readme
+
 ## 1.0.5
 
 ### Patch Changes
