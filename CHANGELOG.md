@@ -1,5 +1,11 @@
 # tailwind-easy-theme
 
+## 1.0.4
+
+### Patch Changes
+
+- add repository
+
 ## 1.0.3
 
 ### Patch Changes

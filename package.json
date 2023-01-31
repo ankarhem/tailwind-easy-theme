@@ -1,9 +1,13 @@
 {
   "name": "tailwind-easy-theme",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ankarhem/tailwind-easy-theme"
+  },
   "files": [
     "build",
     "index.ts"
