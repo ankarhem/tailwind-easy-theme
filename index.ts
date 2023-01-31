@@ -21,7 +21,7 @@ export const easyTheme = <T extends Record<string, string>>(
       .alpha(1)
       .toHslString()
       // remove hsl()
-      .replace(/\((.*)\)/g, '$1')
+      .replace(/hsl\((.*)\)/g, '$1')
       // remove commas
       .replace(/,/g, '');
 
