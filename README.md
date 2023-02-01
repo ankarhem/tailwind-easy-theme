@@ -1,7 +1,7 @@
 ## Installation
 
 ```bash
-pnpm i -D tailwind-easy-theme
+pnpm i -D tailwind-easy-theme colord
 ```
 
 ## Usage

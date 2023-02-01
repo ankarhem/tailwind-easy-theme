@@ -1,5 +1,11 @@
 # tailwind-easy-theme
 
+## 1.0.8
+
+### Patch Changes
+
+- 7830bbc: add peer deps
+
 ## 1.0.7
 
 ### Patch Changes
