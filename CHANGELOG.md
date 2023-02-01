@@ -1,5 +1,11 @@
 # tailwind-easy-theme
 
+## 1.0.7
+
+### Patch Changes
+
+- allow any color format
+
 ## 1.0.6
 
 ### Patch Changes

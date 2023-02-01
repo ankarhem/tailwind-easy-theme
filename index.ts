@@ -1,20 +1,22 @@
 import { colord } from 'colord';
 import { withOptions } from 'tailwindcss/plugin';
 
-type HexColor<T extends string> = T extends `#${string}` ? T : never;
-
-type ColorProps<T extends Record<string, string>> = {
-  [K in keyof T]: HexColor<T[K]>;
+export type Options = {
+  /** The prefix added to the key of a color. Defaults to `--color-` */
+  prefix?: string;
 };
 
-export const easyTheme = <T extends Record<string, string>>(
-  colors: ColorProps<T>
+export const easyTheme = (
+  colors: Record<string, string>,
+  options?: Options
 ) => {
+  let prefix = options?.prefix || '--color-';
   let cssVariables: Record<string, string> = {};
   let themeSettings: Record<string, string> = {};
 
   Object.keys(colors).forEach((key) => {
     const value = colors[key];
+    const hexValue = colord(value).alpha(1).toHex();
 
     // convert to 100 100% 100%
     const hslValue = colord(value)
@@ -25,10 +27,12 @@ export const easyTheme = <T extends Record<string, string>>(
       // remove commas
       .replace(/,/g, '');
 
-    cssVariables[`--color-${key}`] = hslValue;
+    cssVariables[`${prefix}${key}`] = hslValue;
     // Set theme settings to use css variables and fallback to hex color
     // fallback is necessary for tailwind autocomplete to show colors
-    themeSettings[key] = `hsl(var(--color-${key}, ${value}) / <alpha-value>)`;
+    themeSettings[
+      key
+    ] = `hsl(var(${prefix}${key}, ${hexValue}) / <alpha-value>)`;
   });
 
   return withOptions(

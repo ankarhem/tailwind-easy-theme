@@ -18,6 +18,8 @@ module.exports = {
   plugins: [
     easyTheme({
       primary: '#ff0000',
+      secondary: 'rgb(204, 0, 204)',
+      accent: 'hsl(180, 100%, 40%)',
     }),
   ],
 };
@@ -37,3 +39,12 @@ The hex value is given as the fallback value to the tailwind variable config. Th
 the vscode autocomplete shows the color correctly, despite being a css variable!
 
 ![Showcase](https://user-images.githubusercontent.com/14110063/215893197-ffc6d510-5086-4db8-ada8-fcbc90fd7ce3.png)
+
+## Options
+
+```typescript
+export type Options = {
+  /** The prefix added to the key of a color. Defaults to `--color-` */
+  prefix?: string;
+};
+```
