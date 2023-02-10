@@ -1,6 +1,6 @@
 {
   "name": "tailwind-easy-theme",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -14,7 +14,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx tailwindcss -i ./styles/input.css -o ./styles/output.css",
     "build": "tsc"
   },
   "keywords": [],

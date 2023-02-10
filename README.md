@@ -7,19 +7,39 @@ pnpm i -D tailwind-easy-theme colord
 ## Usage
 
 ```javascript
-const { easyTheme } = require('tailwind-easy-theme');
+const { Theme } = require('./build/index.js');
+
+const theme = new Theme({
+  primary: '#ff0000',
+});
+
+const darkMode = theme.variant(
+  {
+    primary: '#0000ff',
+  },
+  {
+    mediaQuery: '@media (prefers-color-scheme: dark)',
+  }
+);
+
+const coolTheme = theme.variant(
+  {
+    primary: '#00ff00',
+  },
+  {
+    selector: '[data-theme="cool-theme"]',
+  }
+);
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./app/**/*.{js,ts,jsx,tsx}'],
+  content: [],
   theme: {
     extend: {},
   },
   plugins: [
-    easyTheme({
-      primary: '#ff0000',
-      secondary: 'rgb(204, 0, 204)',
-      accent: 'hsl(180, 100%, 40%)',
+    theme.create({
+      '[data-theme="dark"]': darkMode,
     }),
   ],
 };
@@ -32,6 +52,20 @@ hsl values, so that opacity works as expected.
 ```css
 :root {
   --color-primary: 0 100% 50%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: 240 100% 50%;
+  }
+}
+
+[data-theme='cool-theme'] {
+  --color-primary: 120 100% 50%;
+}
+
+[data-theme='dark'] {
+  --color-primary: 240 100% 50%;
 }
 ```
 
@@ -46,5 +80,16 @@ the vscode autocomplete shows the color correctly, despite being a css variable!
 export type Options = {
   /** The prefix added to the key of a color. Defaults to `--color-` */
   prefix?: string;
+  /** The selector to add the css variables to. Defaults to `:root` */
+  selector?: string;
+};
+```
+
+```typescript
+type VariantOptions = {
+  /** The selector to add the css variables to. If not specified will use main theme's selector. */
+  selector?: string;
+  /** @example `@media (prefers-color-scheme: dark)` */
+  mediaQuery?: string;
 };
 ```

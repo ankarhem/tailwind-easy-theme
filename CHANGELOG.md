@@ -1,5 +1,17 @@
 # tailwind-easy-theme
 
+## 1.1.0
+
+### Minor Changes
+
+- add variant handling
+
+## 1.0.9
+
+### Patch Changes
+
+- add variant handling
+
 ## 1.0.8
 
 ### Patch Changes
