@@ -7,11 +7,44 @@ pnpm i -D tailwind-easy-theme colord
 ## Usage
 
 ```javascript
-const { Theme } = require('./build/index.js');
+const { Theme } = require("tailwind-easy-theme");
+const colors = require("tailwindcss/colors");
 
-const theme = new Theme({
-  primary: '#ff0000',
-});
+const themes = {
+  light: {
+    somecolor: "#e9e6ff",
+    blue: colors.blue
+    primary: {
+      100: "#ffcccc",
+      200: "#ff9999",
+      300: "#ff6666",
+      400: "#ff3333",
+      500: "#ff0000",
+      600: "#cc0000",
+      700: "#990000",
+      800: "#660000",
+      900: "#330000"
+    },
+  },
+  dark: {
+    primary: {
+      DEFAULT: "#0f172a",
+      950: "#f8fafc",
+      900: "#f1f5f9",
+      800: "#e2e8f0",
+      700: "#cbd5e1",
+      600: "#94a3b8",
+      500: "#64748b",
+      400: "#475569",
+      300: "#334155",
+      200: "#1e293b",
+      100: "#0f172a",
+      50: "#020617",
+    },
+  },
+};
+
+const theme = new Theme(themes.light);
 
 const darkMode = theme.variant(
   {
