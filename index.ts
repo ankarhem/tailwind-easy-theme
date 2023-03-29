@@ -17,6 +17,7 @@ type VariantOptions = {
 };
 
 type Colors = Record<string, string>;
+type ColorList = Colors | Record<string, Record<string, string>>;
 
 /**
  * ${prefix}${key}: <hsl-values>
@@ -28,7 +29,7 @@ type Colors = Record<string, string>;
  * */
 type CssVariables = Record<string, string>;
 
-export class Theme<T extends Colors> {
+export class Theme<T extends ColorList> {
   private prefix: string = '--color-';
   private selector: string = ':root';
   private themeSettings: Record<string, string> = {};
@@ -38,15 +39,15 @@ export class Theme<T extends Colors> {
     this.prefix = options?.prefix || this.prefix;
     this.selector = options?.selector || this.selector;
 
-    this.themeSettings = this.getThemeSettings(colors);
+    const merged = this.mergeColors(colors);
+    this.themeSettings = this.getThemeSettings(merged);
 
-    const cssVariables = this.getColorValues(colors);
+    const cssVariables = this.getColorValues(merged);
     this.cssRules[this.selector] = cssVariables;
   }
 
-  private getThemeSettings(colors: Partial<T>) {
+  private getThemeSettings(colors: Colors) {
     let themeSettings: Record<string, string> = {};
-
     Object.keys(colors).forEach((key) => {
       const value = colors[key];
       if (!value) return;
@@ -61,7 +62,7 @@ export class Theme<T extends Colors> {
     return themeSettings;
   }
 
-  private getColorValues(colors: Partial<T>) {
+  private getColorValues(colors: Colors) {
     let cssVariables: CssVariables = {};
 
     Object.keys(colors).forEach((key) => {
@@ -83,10 +84,22 @@ export class Theme<T extends Colors> {
     return cssVariables;
   }
 
-  variant(colors: Partial<T>, options?: VariantOptions) {
+  private mergeColors(colors: ColorList) {
+    return Object.entries(colors).reduce((acc, [key, value]) => {
+      if (typeof value === 'object') {
+        const nestedEntries = Object.entries(value).map(([k, v]) => {
+          return [k === "DEFAULT" ? key : `${key}-${k}`, v];
+        });
+        return Object.assign(acc, Object.fromEntries(nestedEntries));
+      }
+      return Object.assign(acc, { [key]: value });
+    }, {});
+  }
+
+  variant(colors: ColorList, options?: VariantOptions) {
     const mediaQuery = options?.mediaQuery;
 
-    const cssVariables = this.getColorValues(colors);
+    const cssVariables = this.getColorValues(this.mergeColors(colors));
 
     if (mediaQuery) {
       this.cssRules[mediaQuery] = {
