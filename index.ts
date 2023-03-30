@@ -17,7 +17,10 @@ type VariantOptions = {
 };
 
 type Colors = Record<string, string>;
-type ColorList = Colors | Record<string, Record<string, string>>;
+type ColorProps = Record<string, Colors | string>;
+type PartialColorProps<PrimaryTheme extends ColorProps> = {
+  [K in keyof PrimaryTheme]?: Partial<PrimaryTheme[K]>;
+};
 
 /**
  * ${prefix}${key}: <hsl-values>
@@ -29,7 +32,7 @@ type ColorList = Colors | Record<string, Record<string, string>>;
  * */
 type CssVariables = Record<string, string>;
 
-export class Theme<T extends ColorList> {
+export class Theme<T extends ColorProps> {
   private prefix: string = '--color-';
   private selector: string = ':root';
   private themeSettings: Record<string, string> = {};
@@ -39,10 +42,10 @@ export class Theme<T extends ColorList> {
     this.prefix = options?.prefix || this.prefix;
     this.selector = options?.selector || this.selector;
 
-    const merged = this.mergeColors(colors);
-    this.themeSettings = this.getThemeSettings(merged);
+    const flattenedColors = this.flattenColors(colors);
+    this.themeSettings = this.getThemeSettings(flattenedColors);
 
-    const cssVariables = this.getColorValues(merged);
+    const cssVariables = this.getColorValues(flattenedColors);
     this.cssRules[this.selector] = cssVariables;
   }
 
@@ -84,22 +87,36 @@ export class Theme<T extends ColorList> {
     return cssVariables;
   }
 
-  private mergeColors(colors: ColorList) {
-    return Object.entries(colors).reduce((acc, [key, value]) => {
-      if (typeof value === 'object') {
-        const nestedEntries = Object.entries(value).map(([k, v]) => {
-          return [k === "DEFAULT" ? key : `${key}-${k}`, v];
-        });
-        return Object.assign(acc, Object.fromEntries(nestedEntries));
+  private flattenColors(colors: PartialColorProps<ColorProps>, base = '') {
+    let flattenedColors: Colors = {};
+
+    Object.keys(colors).forEach((_key) => {
+      const key = base ? `${base}-${_key}` : _key;
+      const value = colors[_key];
+      if (!value) return;
+
+      if (typeof value === 'string') {
+        flattenedColors[key] = value;
+        return;
       }
-      return Object.assign(acc, { [key]: value });
-    }, {});
+
+      const { DEFAULT, ...rest } = value;
+      if (DEFAULT) {
+        flattenedColors[key] = DEFAULT;
+      }
+
+      const nestedColors = this.flattenColors(rest, key);
+      flattenedColors = { ...flattenedColors, ...nestedColors };
+    });
+
+    return flattenedColors;
   }
 
-  variant(colors: ColorList, options?: VariantOptions) {
+  variant(colors: PartialColorProps<T>, options?: VariantOptions) {
     const mediaQuery = options?.mediaQuery;
 
-    const cssVariables = this.getColorValues(this.mergeColors(colors));
+    const flattenedColors = this.flattenColors(colors);
+    const cssVariables = this.getColorValues(flattenedColors);
 
     if (mediaQuery) {
       this.cssRules[mediaQuery] = {
