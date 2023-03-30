@@ -17,6 +17,10 @@ type VariantOptions = {
 };
 
 type Colors = Record<string, string>;
+type ColorProps = Record<string, Colors | string>;
+type PartialColorProps<PrimaryTheme extends ColorProps> = {
+  [K in keyof PrimaryTheme]?: Partial<PrimaryTheme[K]>;
+};
 
 /**
  * ${prefix}${key}: <hsl-values>
@@ -28,7 +32,7 @@ type Colors = Record<string, string>;
  * */
 type CssVariables = Record<string, string>;
 
-export class Theme<T extends Colors> {
+export class Theme<T extends ColorProps> {
   private prefix: string = '--color-';
   private selector: string = ':root';
   private themeSettings: Record<string, string> = {};
@@ -38,15 +42,15 @@ export class Theme<T extends Colors> {
     this.prefix = options?.prefix || this.prefix;
     this.selector = options?.selector || this.selector;
 
-    this.themeSettings = this.getThemeSettings(colors);
+    const flattenedColors = this.flattenColors(colors);
+    this.themeSettings = this.getThemeSettings(flattenedColors);
 
-    const cssVariables = this.getColorValues(colors);
+    const cssVariables = this.getColorValues(flattenedColors);
     this.cssRules[this.selector] = cssVariables;
   }
 
-  private getThemeSettings(colors: Partial<T>) {
+  private getThemeSettings(colors: Colors) {
     let themeSettings: Record<string, string> = {};
-
     Object.keys(colors).forEach((key) => {
       const value = colors[key];
       if (!value) return;
@@ -61,7 +65,7 @@ export class Theme<T extends Colors> {
     return themeSettings;
   }
 
-  private getColorValues(colors: Partial<T>) {
+  private getColorValues(colors: Colors) {
     let cssVariables: CssVariables = {};
 
     Object.keys(colors).forEach((key) => {
@@ -83,10 +87,36 @@ export class Theme<T extends Colors> {
     return cssVariables;
   }
 
-  variant(colors: Partial<T>, options?: VariantOptions) {
+  private flattenColors(colors: PartialColorProps<ColorProps>, base = '') {
+    let flattenedColors: Colors = {};
+
+    Object.keys(colors).forEach((_key) => {
+      const key = base ? `${base}-${_key}` : _key;
+      const value = colors[_key];
+      if (!value) return;
+
+      if (typeof value === 'string') {
+        flattenedColors[key] = value;
+        return;
+      }
+
+      const { DEFAULT, ...rest } = value;
+      if (DEFAULT) {
+        flattenedColors[key] = DEFAULT;
+      }
+
+      const nestedColors = this.flattenColors(rest, key);
+      flattenedColors = { ...flattenedColors, ...nestedColors };
+    });
+
+    return flattenedColors;
+  }
+
+  variant(colors: PartialColorProps<T>, options?: VariantOptions) {
     const mediaQuery = options?.mediaQuery;
 
-    const cssVariables = this.getColorValues(colors);
+    const flattenedColors = this.flattenColors(colors);
+    const cssVariables = this.getColorValues(flattenedColors);
 
     if (mediaQuery) {
       this.cssRules[mediaQuery] = {
