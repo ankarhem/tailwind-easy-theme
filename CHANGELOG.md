@@ -1,5 +1,11 @@
 # tailwind-easy-theme
 
+## 1.1.1
+
+### Patch Changes
+
+- support nested colors
+
 ## 1.1.0
 
 ### Minor Changes
