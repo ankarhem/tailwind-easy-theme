@@ -1,10 +1,11 @@
-import { colord } from 'colord';
-import { withOptions } from 'tailwindcss/plugin';
-import type { CSSRuleObject } from 'tailwindcss/types/config';
+import { colord } from "colord";
+import { withOptions } from "tailwindcss/plugin";
+import type { CSSRuleObject } from "tailwindcss/types/config";
 
+export type CSSVarPrefix = `--${string}-`;
 export type Options = {
   /** The prefix added to the key of a color. Defaults to `--color-` */
-  prefix?: string;
+  prefix?: CSSVarPrefix;
   /** The selector to add the css variables to. Defaults to `:root` */
   selector?: string;
 };
@@ -33,8 +34,9 @@ type PartialColorProps<PrimaryTheme extends ColorProps> = {
 type CssVariables = Record<string, string>;
 
 export class Theme<T extends ColorProps> {
-  private prefix: string = '--color-';
-  private selector: string = ':root';
+  private prefix: CSSVarPrefix = "--color-";
+  // private prefix: string = "--color-";
+  private selector: string = ":root";
   private themeSettings: Record<string, string> = {};
   private cssRules: CSSRuleObject = {};
 
@@ -77,9 +79,9 @@ export class Theme<T extends ColorProps> {
         .alpha(1)
         .toHslString()
         // remove hsl()
-        .replace(/hsl\((.*)\)/g, '$1')
+        .replace(/hsl\((.*)\)/g, "$1")
         // remove commas
-        .replace(/,/g, '');
+        .replace(/,/g, "");
 
       (cssVariables as any)[`${this.prefix}${key}`] = hslValue;
     });
@@ -87,7 +89,7 @@ export class Theme<T extends ColorProps> {
     return cssVariables;
   }
 
-  private flattenColors(colors: PartialColorProps<ColorProps>, base = '') {
+  private flattenColors(colors: PartialColorProps<ColorProps>, base = "") {
     let flattenedColors: Colors = {};
 
     Object.keys(colors).forEach((_key) => {
@@ -95,7 +97,7 @@ export class Theme<T extends ColorProps> {
       const value = colors[_key];
       if (!value) return;
 
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         flattenedColors[key] = value;
         return;
       }
@@ -134,6 +136,11 @@ export class Theme<T extends ColorProps> {
   create(base?: CSSRuleObject) {
     const cssRules = this.cssRules;
     const themeSettings = this.themeSettings;
+    console.log("Creating TW theme: ", {
+      base,
+      cssRules,
+      themeSettings,
+    });
     return withOptions(
       () => {
         return function ({ addBase }) {
