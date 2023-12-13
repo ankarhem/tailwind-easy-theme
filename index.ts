@@ -56,7 +56,6 @@ type CssVariables = Record<string, string>;
 
 export class Theme<T extends ColorProps> {
   private prefix: CSSVarPrefix = "--color-";
-  // private prefix: string = "--color-";
   private selector: string = ":root";
   private themeSettings: Record<string, string> = {};
   private cssRules: CSSRuleObject = {};
