@@ -3,11 +3,32 @@ import { withOptions } from "tailwindcss/plugin";
 import type { CSSRuleObject } from "tailwindcss/types/config";
 
 export type CSSVarPrefix = `--${string}-`;
+
+export type TailwindThemeColorProperty =
+  | "colors"
+  | "backgroundColor"
+  | "textColor"
+  | "borderColor"
+  | "accentColor"
+  | "ringColor"
+  | "caretColor"
+  | "divideColor"
+  | "outlineColor"
+  | "boxShadowColor"
+  | "ringOffsetColor"
+  | "placeholderColor"
+  | "textDecorationColor";
+
 export type Options = {
   /** The prefix added to the key of a color. Defaults to `--color-` */
   prefix?: CSSVarPrefix;
   /** The selector to add the css variables to. Defaults to `:root` */
   selector?: string;
+  /**
+   * The Tailwind theme property to apply this theme's color to. Defaults to `colors` (i.e. all color properties)
+   * @example limit the theme to only `bg-*` classes by setting colorProperty to "backgroundColor"
+   */
+  colorProperty?: TailwindThemeColorProperty | TailwindThemeColorProperty[];
 };
 
 type VariantOptions = {
@@ -39,10 +60,14 @@ export class Theme<T extends ColorProps> {
   private selector: string = ":root";
   private themeSettings: Record<string, string> = {};
   private cssRules: CSSRuleObject = {};
+  private colorProperty:
+    | TailwindThemeColorProperty
+    | TailwindThemeColorProperty[] = "colors";
 
   constructor(colors: T, options?: Options) {
     this.prefix = options?.prefix || this.prefix;
     this.selector = options?.selector || this.selector;
+    this.colorProperty = options?.colorProperty || this.colorProperty;
 
     const flattenedColors = this.flattenColors(colors);
     this.themeSettings = this.getThemeSettings(flattenedColors);
@@ -136,11 +161,7 @@ export class Theme<T extends ColorProps> {
   create(base?: CSSRuleObject) {
     const cssRules = this.cssRules;
     const themeSettings = this.themeSettings;
-    console.log("Creating TW theme: ", {
-      base,
-      cssRules,
-      themeSettings,
-    });
+
     return withOptions(
       () => {
         return function ({ addBase }) {
@@ -151,13 +172,24 @@ export class Theme<T extends ColorProps> {
         };
       },
       () => {
-        return {
-          theme: {
-            extend: {
-              colors: themeSettings,
-            },
-          },
-        };
+        let config = { theme: { extend: {} } };
+
+        if (Array.isArray(this.colorProperty)) {
+          // apply themeSettings to multiple Tailwind theme color properties:
+          this.colorProperty.forEach((property) => {
+            config.theme.extend = {
+              ...config.theme.extend,
+              [property]: themeSettings,
+            };
+          });
+        } else {
+          // apply themeSettings to single Tailwind theme color property:
+          config.theme.extend = {
+            [this.colorProperty]: themeSettings,
+          };
+        }
+
+        return config;
       }
     )({});
   }
