@@ -22,7 +22,7 @@ import { camelToKebab } from "./utils/camelToKebab";
  */
 const themePropertiesConfig: InternalThemePropertiesConfig = {
   colors: {
-    prefix: "colors",
+    prefix: "",
     type: ColorProperty,
   },
   backgroundColor: {
