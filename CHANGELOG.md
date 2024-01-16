@@ -1,5 +1,11 @@
 # tailwind-easy-theme
 
+## 2.0.0
+
+### Major Changes
+
+- Allow full theme config
+
 ## 1.1.1
 
 ### Patch Changes
