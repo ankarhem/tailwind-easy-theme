@@ -73,6 +73,14 @@ const themePropertiesConfig: InternalThemePropertiesConfig = {
     prefix: "text-decoration",
     type: ColorProperty,
   },
+  gradientColorStops: {
+    prefix: "gradient",
+    type: ColorProperty,
+  },
+  fill: {
+    prefix: "fill",
+    type: ColorProperty,
+  },
 };
 
 export class Theme<T extends ThemeProps = ThemeProps> {
