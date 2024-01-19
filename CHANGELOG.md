@@ -1,5 +1,11 @@
 # tailwind-easy-theme
 
+## 2.0.1
+
+### Patch Changes
+
+- add missing color props
+
 ## 2.0.0
 
 ### Major Changes
