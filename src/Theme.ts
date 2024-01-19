@@ -77,6 +77,10 @@ const themePropertiesConfig: InternalThemePropertiesConfig = {
     prefix: "gradient",
     type: ColorProperty,
   },
+  fill: {
+    prefix: "fill",
+    type: ColorProperty,
+  },
 };
 
 export class Theme<T extends ThemeProps = ThemeProps> {
