@@ -81,6 +81,10 @@ const themePropertiesConfig: InternalThemePropertiesConfig = {
     prefix: "fill",
     type: ColorProperty,
   },
+  stroke: {
+    prefix: "stroke",
+    type: ColorProperty,
+  },
 };
 
 export class Theme<T extends ThemeProps = ThemeProps> {
